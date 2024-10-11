@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: <your-account-id>.dkr.ecr.<your-region>.amazonaws.com/backend-api:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DB_HOST
+          value: "<rds-endpoint>"
+        - name: DB_USER
+          value: "admin"
+        - name: DB_PASS
+          value: "password"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - port: 5000
+      targetPort: 5000
